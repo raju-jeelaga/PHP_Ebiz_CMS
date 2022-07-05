@@ -2,40 +2,46 @@
 <?php require_once("Includes/Functions.php"); ?>
 <?php require_once("Includes/Sessions.php"); ?>
 <?php
-//$_SESSION["TrackingURL"]=$_SERVER["PHP_SELF"];
+$_SESSION["TrackingURL"]=$_SERVER["PHP_SELF"];
  //Confirm_Login(); ?>
 <?php
 if(isset($_POST["Submit"])){
   $Category = $_POST["CategoryTitle"];
-  $Admin = $_SESSION["UserName"];
-  date_default_timezone_set("Asia/Karachi");
+  //$Admin = $_SESSION["UserName"];
+  date_default_timezone_set("Asia/Calcutta");
   $CurrentTime=time();
   $DateTime=strftime("%B-%d-%Y %H:%M:%S",$CurrentTime);
+  //$date = '19:24:15 06/13/2013'; 
+  //echo date('h:i:s a m/d/Y', strtotime($date));
 
   if(empty($Category)){
     $_SESSION["ErrorMessage"]= "All fields must be filled out";
     Redirect_to("Categories.php");
-  }elseif (strlen($Category)<3) {
+  }
+  elseif (strlen($Category)<3) {
     $_SESSION["ErrorMessage"]= "Category title should be greater than 2 characters";
     Redirect_to("Categories.php");
   }elseif (strlen($Category)>49) {
     $_SESSION["ErrorMessage"]= "Category title should be less than than 50 characters";
     Redirect_to("Categories.php");
-  }else{
+  }
+  else{
     // Query to insert category in DB When everything is fine
     global $ConnectingDB;
-    $sql = "INSERT INTO category(title,author,datetime)";
-    $sql .= "VALUES(:categoryName,:adminName,:dateTime)";
+    $sql = "INSERT INTO category(title,datetime)
+    VALUES(:categoryName,:dateTime)";
     $stmt = $ConnectingDB->prepare($sql);
     $stmt->bindValue(':categoryName',$Category);
-    $stmt->bindValue(':adminName',$Admin);
+    //$stmt->bindValue(':adminName',$Admin);
     $stmt->bindValue(':dateTime',$DateTime);
     $Execute=$stmt->execute();
 
     if($Execute){
-      $_SESSION["SuccessMessage"]="Category is added Successfully";
+      //echo "Category is added Successfully";
+      $_SESSION["SuccessMessage"]="Category with id : " .$ConnectingDB->lastInsertId()." added Successfully";
       Redirect_to("Categories.php");
     }else {
+      //echo "Something went wrong. Try Again !";
       $_SESSION["ErrorMessage"]= "Something went wrong. Try Again !";
       Redirect_to("Categories.php");
     }
@@ -58,7 +64,7 @@ if(isset($_POST["Submit"])){
   <div style="height:10px; background:#27aae1;"></div>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-      <a href="#" class="navbar-brand"> JAZEBAKRAM.COM</a>
+      <a href="#" class="navbar-brand">Logo</a>
       <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarcollapseCMS">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -148,8 +154,7 @@ if(isset($_POST["Submit"])){
       <div class="container">
         <div class="row">
           <div class="col">
-          <p class="lead text-center">Theme By | Jazeb Akram | <span id="year"></span> &copy; ----All right Reserved.</p>
-          <p class="text-center small"><a style="color: white; text-decoration: none; cursor: pointer;" href="http://jazebakram.com/coupons/" target="_blank"> This site is only used for Study purpose jazebakram.com have all the rights. no one is allow to distribute copies other then <br>&trade; jazebakram.com &trade;  Udemy ; &trade; Skillshare ; &trade; StackSkills</a></p>
+          <p class="lead text-center">Theme By | Raju Jeelaga | <span id="year"></span> &copy; ----All right Reserved.</p>
            </div>
          </div>
       </div>
