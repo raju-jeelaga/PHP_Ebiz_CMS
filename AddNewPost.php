@@ -36,6 +36,7 @@ if(isset($_POST["Submit"])){
   		$stmt->bindValue(':authoR',$Admin);
   		$stmt->bindValue(':imagE',$Image);
   		$stmt->bindValue(':descriptioN',$PostDescription);
+      move_uploaded_file($_FILES["Image"]["tmp_name"],$Target);
   		$Execute=$stmt->execute();
 	    if($Execute){
 	      $_SESSION["SuccessMessage"]="Post with id : " .$ConnectingDB->lastInsertId()." added Successfully";
