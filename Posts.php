@@ -125,13 +125,20 @@
 
              		<tr>
 		              <th><?php echo $i; ?></th>
-		              <th><?php echo $Title; ?></th>
+		              <th>
+                    <?php if(strlen($Title) > 15){
+                      $Title = substr($Title, 0,10)."...";}  
+                      echo $Title; ?>
+                  </th>
 		              <th><?php echo $CategoryName; ?></th>
 		              <th><?php echo $DateTime; ?></th>
 		              <th><?php echo $Admin; ?></th>
 		              <th><img src="Uploads/<?php echo $Image; ?>" width="100px" height="80"></th>
 		              <th>Comments</th>
-		              <th>Action</th>
+		              <td>
+                    <a href="EditPost.php?id=<?php echo $Id; ?>"><span class="btn btn-warning">Edit</span></a>
+                    <a href="DeletePost.php?id=<?php echo $Id; ?>"><span class="btn btn-danger">Delete</span></a>
+                  </td>
 		              <th>Live Preview</th>
 		            </tr>
              	<?php $i++; } ?>      	
