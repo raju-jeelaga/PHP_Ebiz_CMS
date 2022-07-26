@@ -62,9 +62,6 @@
           <h1>The Complete Responsive CMS Blog</h1>
           <h1 class="lead">The Complete blog by using PHP by Raju Jeelaga</h1>
           <?php 
-            echo ErrorMessage();
-          ?>
-          <?php 
             global $ConnectingDB;
             if(isset($_GET['SearchButton'])){
               $Search = $_GET["Search"];
@@ -77,8 +74,13 @@
               $stmt->bindValue(':search','%'.$Search.'%');
               $stmt->execute();
             } else{
-              $sql = "SELECT * FROM posts ORDER BY id DESC";
-              $stmt = $ConnectingDB->query($sql);
+            	$PostIdFromURL = $_GET['id'];
+            	if(!isset($PostIdFromURL)){
+            		$_SESSION['ErrorMessage'] = "Bad Request !";
+            		Redirect_to("Blog.php?page=1");
+            	}
+              	$sql = "SELECT * FROM posts WHERE id = '$PostIdFromURL'";
+              	$stmt = $ConnectingDB->query($sql);
             }
             global $ConnectingDB;
             
@@ -98,14 +100,10 @@
                 <small class="text-muted">Category:<?php echo htmlentities($category); ?></small>
                 <span style="float:right;" class="badge badge-dark text-light">Comments:20</span>
                 <p class="card-text">
-                  <?php if( strlen($PostDescription) > 150){
-                    $PostDescription = substr($PostDescription,0,150)."...";}
+                  <?php 
                     echo htmlentities($PostDescription); 
                   ?>
                 </p>
-                <a href="FullPost.php?id=<?php echo $PostId; ?>" style="float:right;">
-                  <span class="btn btn-info">Read More &rang;&rang; </span>
-                </a>
               </div>
           </div>
 

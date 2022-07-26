@@ -139,7 +139,7 @@
                     <a href="EditPost.php?id=<?php echo $Id; ?>"><span class="btn btn-warning">Edit</span></a>
                     <a href="DeletePost.php?id=<?php echo $Id; ?>"><span class="btn btn-danger">Delete</span></a>
                   </td>
-		              <th>Live Preview</th>
+		              <th><a href="FullPost.php?id=<?php echo $Id; ?>" target="_blank"><span class="btn btn-primary">Live Preview</span></a></th>
 		            </tr>
              	<?php $i++; } ?>      	
           </table>
