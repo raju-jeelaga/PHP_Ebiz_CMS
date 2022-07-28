@@ -7,53 +7,17 @@ $_SESSION["TrackingURL"]=$_SERVER["PHP_SELF"];
 <?php
 $SarchQueryParameter = $_GET['id'];
 if(isset($_POST["Submit"])){
-	$PostTitle = $_POST['PostTitle'];
-	$Category = $_POST['Category'];
-	$Image = $_FILES['Image']['name'];
-	$Target = 'Uploads/'.basename($_FILES['Image']['name']);
-	$PostDescription = $_POST['PostDescription'];
-	$Admin = "Raju";
-	date_default_timezone_set("Asia/Karachi");
-	$CurrentTime=time();
-	$DateTime=strftime("%B-%d-%Y %H:%M:%S",$CurrentTime);
-
-	if(empty($PostTitle)){
-		$_SESSION['ErrorMessage'] = "Title Can not be Empty";
-		Redirect_to('Posts.php');
-	} elseif (strlen($PostTitle) < 5){
-		$_SESSION['ErrorMessage'] = "Post Title should be greater than 5 characters";
-		Redirect_to('Posts.php');
-	} elseif (strlen($PostDescription)>9999) {
-    	$_SESSION["ErrorMessage"]= "Post Description should be less than than 1000 characters";
-    	Redirect_to("Posts.php");
-  	} else {
-      // Query to Update Post in DB When everything is fine
-  		global $ConnectingDB;
-      // if(!empty($_FILES['Image']['name'])){
-      //   $sql = "UPDATE posts SET title='$PostTitle', category='$Category', image='$Image', description='$PostDescription' WHERE id='$SarchQueryParameter'";
-      // } else {
-      //   $sql = "UPDATE posts SET title='$PostTitle', category='$Category', description='$PostDescription' WHERE id='$SarchQueryParameter'";
-      // }
-      if (!empty($_FILES["Image"]["name"])) {
-          $sql = "UPDATE posts
-                  SET title='$PostTitle', category='$Category', image='$Image', description='$PostDescription' WHERE id='$SarchQueryParameter'";
-        }else {
-          $sql = "UPDATE posts
-                  SET title='$PostTitle', category='$Category', description='$PostDescription'
-                  WHERE id='$SarchQueryParameter'";
-        }
-
-      $Execute= $ConnectingDB->query($sql);
-      move_uploaded_file($_FILES["Image"]["tmp_name"],$Target);
-
-	    if($Execute){
-        $_SESSION["SuccessMessage"]="Post Updated Successfully";
+      // Query to Delete Post in DB When everything is fine
+  	global $ConnectingDB;
+    $sql = "DELETE FROM posts WHERE id='$SarchQueryParameter'";
+    $Execute= $ConnectingDB->query($sql);
+	 if($Execute){
+        $_SESSION["SuccessMessage"]="Post DELETED Successfully";
         Redirect_to("Posts.php");
-      }else {
+     }else {
         $_SESSION["ErrorMessage"]= "Something went wrong. Try Again !";
         Redirect_to("Posts.php");
-      }
-  	}
+     }
   
 } //Ending of Submit Button If-Condition
  ?>
@@ -66,7 +30,7 @@ if(isset($_POST["Submit"])){
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <link rel="stylesheet" href="Css/Styles.css">
-  <title>Edit Post</title>
+  <title>Delete Post</title>
 </head>
 <body>
   <!-- NAVBAR -->
@@ -115,7 +79,7 @@ if(isset($_POST["Submit"])){
       <div class="container">
         <div class="row">
           <div class="col-md-12">
-          <h1><i class="fas fa-edit" style="color:#27aae1;"></i> Edit Posts</h1>
+          <h1><i class="fas fa-edit" style="color:#27aae1;"></i> Delete Posts</h1>
           </div>
         </div>
       </div>
@@ -139,44 +103,29 @@ if(isset($_POST["Submit"])){
          	$PostToBeUpdated     = $DataRows['description'];
            }
            ?>
-          <form class="" action="EditPost.php?id=<?php echo $SarchQueryParameter; ?>" method="post" enctype="multipart/form-data">
+          <form class="" action="DeletePost.php?id=<?php echo $SarchQueryParameter; ?>" method="post" enctype="multipart/form-data">
             <div class="card bg-secondary text-light mb-3">
               <div class="card-header">
-                <h1>Edit Posts</h1>
+                <h1>Delete Posts</h1>
               </div>
               <div class="card-body bg-dark">
                 <div class="form-group">
                   <label for="title"> <span class="FieldInfo"> Post Title: </span></label>
-                   <input class="form-control" type="text" name="PostTitle" id="title" placeholder="Type title here" value="<?php echo $TitleToBeUpdated; ?>">
+                   <input disabled class="form-control" type="text" name="PostTitle" id="title" placeholder="Type title here" value="<?php echo $TitleToBeUpdated; ?>">
                 </div>
                 <div class="form-group">
-                  <span class="FieldInfo">Existing Category: </span>
-                  <?php echo $CategoryToBeUpdated;?>
-                  <br>
-	              <label for="CategoryTitle"> <span class="FieldInfo"> Chose Categroy </span></label>
-	               <select class="form-control" id="CategoryTitle"  name="Category">
-	                  <?php 
-	                  	global $ConnectingDB;
-	                  	$sql = "SELECT id,title from category";
-	                  	$stmt = $ConnectingDB->query($sql);
-	                  	while ( $DataRows = $stmt->fetch()){
-	                  		$Id = $DataRows['id'];
-	                  		$CategoryName = $DataRows['title']; ?>
-	                  		<option><?php echo $CategoryName; ?></option>
-	                  	<?php } ?>
-	               </select>
+                	<label for="CategoryTitle"> 
+                		<span class="FieldInfo"> Existing Categroy </span>
+                	</label>
+                	<span><?php echo $CategoryToBeUpdated;?></span><br>
 	            </div>
 	            <div class="form=group mb-1">
-                <span class="FieldInfo">Existing Image: </span>
-                <img  class="mb-1" src="Uploads/<?php echo $ImageToBeUpdated;?>" width="170px"; height="70px"; >
-                <div class="custom-file">
-                <input class="custom-file-input" type="File" name="Image" id="imageSelect" value="">
-                <label for="imageSelect" class="custom-file-label">Select Image </label>
-                </div>
-              </div>
+	             <span class="FieldInfo">Existing Image: </span>
+	                <img  class="mb-1" src="Uploads/<?php echo $ImageToBeUpdated;?>" width="170px"; height="70px"; >
+	              </div>
 	            <div class="form-group">
                 <label for="Post"> <span class="FieldInfo"> Post: </span></label>
-                <textarea class="form-control" id="Post" name="PostDescription" rows="8" cols="80">
+                <textarea disabled class="form-control" id="Post" name="PostDescription" rows="8" cols="80">
                   <?php echo $PostToBeUpdated;?>
                 </textarea>
               </div>
@@ -186,8 +135,8 @@ if(isset($_POST["Submit"])){
                     <a href="Dashboard.php" class="btn btn-warning btn-block"><i class="fas fa-arrow-left"></i> Back To Dashboard</a>
                   </div>
                   <div class="col-lg-6 mb-2">
-                    <button type="submit" name="Submit" class="btn btn-success btn-block">
-                      <i class="fas fa-check"></i> Publish
+                    <button type="submit" name="Submit" class="btn btn-danger btn-block">
+                      <i class="fas fa-trash"></i> Delete
                     </button>
                   </div>
                 </div>
