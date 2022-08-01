@@ -1,6 +1,45 @@
 <?php require_once("Includes/DB.php"); ?>
 <?php require_once("Includes/Functions.php"); ?>
 <?php require_once("Includes/Sessions.php"); ?>
+<?php 
+$SearchQueryParameter = $_GET["id"];
+if(isset($_POST["Submit"])){
+  $Name     = $_POST["CommenterName"];
+  $Email    = $_POST["CommenterEmail"];
+  $Comment  = $_POST["CommenterThoughts"];
+  date_default_timezone_set("Asia/Karachi");
+  $CurrentTime=time();
+  $DateTime=strftime("%B-%d-%Y %H:%M:%S",$CurrentTime);
+
+  // if(empty($Name) || empty($Email) || empty($Comment) ){
+  //   $_SESSION["ErrorMessage"]= "All fields must be filled out";
+  //   Redirect_to("FullPost.php?id={$SearchQueryParameter}");
+  // }elseif (strlen($Comment)>500) {
+  //   $_SESSION["ErrorMessage"]= "Comment length should be less than 500 characters";
+  //   Redirect_to("FullPost.php?id={$SearchQueryParameter}");
+  // }else{
+    // Query to insert Post in DB When everything is fine
+    global $ConnectingDB;
+    $sql  = "INSERT INTO comments(datetime,name,email,comment)";
+    $sql .= "VALUES(:dateTime,:name,:email,:comment)";
+    $stmt = $ConnectingDB->prepare($sql);
+    $stmt -> bindValue(':dateTime',$DateTime);
+    $stmt -> bindValue(':name',$Name);
+    $stmt -> bindValue(':email',$Email);
+    $stmt -> bindValue(':comment',$Comment);
+    $Execute = $stmt -> execute();
+    //var_dump($Execute);
+    if($Execute){
+      $_SESSION["SuccessMessage"]="Comment Submitted Successfully";
+      Redirect_to("FullPost.php?id={$SearchQueryParameter}");
+    }else {
+      $_SESSION["ErrorMessage"]="Something went wrong. Try Again !";
+      Redirect_to("FullPost.php?id={$SearchQueryParameter}");
+    }
+
+  //}
+} 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +49,7 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <link rel="stylesheet" href="Css/Styles.css">
-  <title>Blog</title>
+  <title>Post Detail</title>
 </head>
 <body>
   <!-- NAVBAR -->
@@ -105,9 +144,47 @@
                   ?>
                 </p>
               </div>
-          </div>
 
+          </div>
           <?php } // while loop ends?>
+
+          <div>
+            <form class="" action="FullPost.php?id=<?php echo $SearchQueryParameter ?>" method="post">
+              <div class="card mb-3">
+                <div class="card-header">
+                  <h5 class="FieldInfo">Share your thoughts about this post</h5>
+                </div>
+                <div class="card-body">
+
+                  <div class="form-group">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                      </div>
+                    <input class="form-control" type="text" name="CommenterName" placeholder="Name" value="">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                      </div>
+                    <input class="form-control" type="text" name="CommenterEmail" placeholder="Email" value="">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <textarea name="CommenterThoughts" class="form-control" rows="6" cols="80"></textarea>
+                  </div>
+                  <div class="">
+                    <button type="submit" name="Submit" class="btn btn-primary">Submit</button>
+                  </div>
+
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
 
         <div class="col-sm-3 offset-sm-1" style="height:auto; background:green;">
